@@ -16,14 +16,11 @@ function ccNumberValidator(ccNumber){
     }
 
     if (sum%10 === 0){
-        console.log(`Your credit card is valid`);
+        return `Your credit card is valid`;
     } else {
-        console.log(`Your credit card is not valid, try again`);
+        return `Your credit card is not valid, try again`;
     }
 }
-
-// let ccNumber = "8888888888888889";
-// ccNumberValidator(ccNumber);
 
 const readline = require('readline').createInterface({
     input: process.stdin,
@@ -31,6 +28,6 @@ const readline = require('readline').createInterface({
   });
   
   readline.question('Ingress your credit card number (not spaces or dashes allowed)\n>', ccNumber => {
-    ccNumberValidator(ccNumber);
+    console.log(ccNumberValidator(ccNumber));
       readline.close();
     });
