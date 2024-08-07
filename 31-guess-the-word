@@ -14,13 +14,15 @@ const words = [
   "watch", "xylophone", "yard", "zigzag"
 ];
 
+console.log("\nThis game is about guessing a word by completing the missing letters. You have a number of attempts depending on the extension of the word. You have to enter letters and try to guess the word. Repeated letters must be entered as many times as they are missing. One letter does not replace all the missing ones. Good Luck!")
+
 function randomNumber (number){
     return Math.floor(Math.random() * number)
 }
 
 // Select a random word from the array
-// let word = words[randomNumber(104)];
-let word = "kangaroo";
+let word = words[randomNumber(104)];
+// let word = "kangaroo";
 
 //Obtain the 60% of letters to hide from the word
 let hide = Math.floor(word.length*0.6);
@@ -29,51 +31,52 @@ let i = 0;
 let pos = {};
 let wordArr = word.split(''); // Makes an array with the leters of the selected word
 
+// Next while is intended to replace 60% of letters with "_" and store their values and positions in order to retrieve them later when guessing
 while (i < hide ){
-    let letter = randomNumber(word.length);
+    let letter = randomNumber(word.length); //Choose a position to search for a letter
     // console.log(`letter: ${letter}`);
     
+    // This if searches for a letter which is not "_" and saves it in object pos
     if (wordArr[letter] !=="_"){
 
-        // If there is no the letter inside pos, it creates an array to push it later
+        // If the chosen letter is not inside pos, it creates an array for this letter to push it later
         if (!Object.keys(pos).includes(wordArr[letter])) {
-            pos[wordArr[letter]] = [];
-            console.log("entré acá")
+            pos[wordArr[letter]] = []; //Creates a new key-value for the specific letter
+            // console.log("entré acá")
         }
 
         // Adds the value to the corresponding letter into pos object
-        pos[wordArr[letter]].push(letter);
-        wordArr[letter] = '_';   
+        pos[wordArr[letter]].push(letter); //Adds position to the array associated with the specific letter
+        wordArr[letter] = '_';   // Changes the letter for a "_" character
 
         i+=1;
     }
 }
-console.log(Object.keys(pos)); 
-console.log(pos); 
-console.log(wordArr.join('')); 
+// console.log(Object.keys(pos)); 
+// console.log(pos); 
+console.log(`\n\t\t${wordArr.join('')}\n`); 
 
+
+// This function evaluates if the entered letter matches one of the missing letters
 
 function guessTheWord(inputLetter){
 
-
     if (Object.keys(pos).includes(inputLetter)) {
 
-        console.log("Correct!");
+        console.log("\nCorrect!");
         wordArr[pos[inputLetter][0]] = inputLetter;
-        console.log(wordArr.join(''));
-        pos[inputLetter].length > 0? pos[inputLetter].splice(0,1) : delete pos[inputLetter];
-        console.log(pos);
+        // console.log(`\n\t\t${wordArr.join('')}\n`); 
+        pos[inputLetter].length > 1? pos[inputLetter].splice(0,1) : delete pos[inputLetter];
+        // console.log(pos);
 
 
     } else {
 
-        console.log("Incorrect, try again!");
+        console.log("\nIncorrect, try again!");
     }
+
+    console.log(`\n\t\t${wordArr.join('')}\n`);
 }
-
-// guessTheWord("a");
-
-
 
 let j = hide*2;
 
@@ -82,31 +85,38 @@ const readline = require('readline').createInterface({
     output: process.stdout
   });
 
-while (true) {
-
-    
-    console.log(`You have ${j-1} extra attempts:`);
-
-    
-    const readline = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout
-      });
+  function question(query) {
+    return new Promise(resolve => readline.question(query, resolve));
+  }
+  
+  async function main() {
+  
+      while (true) {
       
-      readline.question('Ingress a letter\n>', inputLetter => {
-        guessTheWord(inputLetter);
-          readline.close();
-        });
-
-    j-=1;
-
-    if (j === 0){
-        console.log("Game Over! :(");
+      console.log(`You have ${j-1} extra attempts:`);
+  
+      const inputLetter = await question('Enter a letter\n> ');
+      guessTheWord(inputLetter.toLowerCase());
+      j-=1;
+  
+      if (j === 0){
+        console.log("\n--------------------------GAME OVER! :( ----------------------------------\n");
+        console.log(`\t\tThe correct word was ${word}\n`);
         break;
-    }
-}
+      } 
+      if (Object.keys(pos).length === 0){
+        console.log('\n-----------------------CONGRATULATIONS! YOU WIN! :D------------------------\n');
+        console.log(`\t\tYou guessed the word ${word}\n`)
+        break
+      }
+      }
+  
+      readline.close();
+  }
+  
+  main();
 
 
-console.log(`The correct word was ${word}`);
+
 
 
